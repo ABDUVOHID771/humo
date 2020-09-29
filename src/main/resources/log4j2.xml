@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30" packages="com.paymo.core_humo.config">
+    <Properties>
+        <Property name="LOG_PATTERN">
+            %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{ %5p }{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=green,
+            DEBUG=green bold, TRACE=blue}${hostName} --- [%15.15t] %-40.40c{1.} : %spi%n
+        </Property>
+    </Properties>
+    <CustomLevels>
+        <CustomLevel name="API_REQUEST" intLevel="0" />
+    </CustomLevels>
+
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        <RollingFile name="DAILY_LOG" filename="logs/humo.log" immediateFlush="true"
+                     filePattern="logs/humo-%d{yyyy-MM-dd}.%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+        <RollingFile name="DAILY_ERROR_LOG" filename="logs/humo-error.log" immediateFlush="true"
+                     filePattern="logs/humo-error-%d{yyyy-MM-dd}-error.log">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+        <RollingFile name="API_REQUEST_LOG" filename="logs/humo-api-request.log" immediateFlush="true"
+                     filePattern="logs/humo-api-request-%d{yyyy-MM-dd}-error.log">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.example.log4j2" level="debug" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+        </Logger>
+        <Logger name="com.zaxxer.hikari.HikariConfig" level="trace">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="INFO">
+            <AppenderRef ref="ConsoleAppender" level="debug"/>
+            <AppenderRef ref="DAILY_LOG" level="debug"/>
+            <AppenderRef ref="DAILY_ERROR_LOG" level="error"/>
+            <AppenderRef ref="API_REQUEST_LOG" level="API_REQUEST"/>
+        </Root>
+    </Loggers>
+</Configuration>
